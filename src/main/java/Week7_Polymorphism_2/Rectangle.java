@@ -1,6 +1,8 @@
 package Week7_Polymorphism_2;
 
+import java.awt.*;
 import java.util.Objects;
+import java.util.Random;
 
 public class Rectangle extends Shape {
     protected Point topLeft;
@@ -134,4 +136,64 @@ public class Rectangle extends Shape {
     public int hashCode() {
         return Objects.hash(topLeft, width, length);
     }
+
+    @Override
+    public void move() {
+        topLeft.setPointX(topLeft.getPointX() + velocityX);
+        topLeft.setPointY(topLeft.getPointY() + velocityY);
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        Random random = new Random();
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+        Color randomColor = new Color(red, green, blue);
+
+        g.setColor(randomColor);
+
+        int x = (int) topLeft.getPointX();
+        int y = (int) topLeft.getPointY();
+        int width = (int) this.width;
+        int height = (int) this.length;
+
+        g.drawRect(x, y, width, height);
+    }
+
+    public boolean collidesWith(Shape other) {
+        if (other instanceof Rectangle otherRectangle) {
+        } else if (other instanceof Circle circle) {
+        }
+        return false;
+    }
+
+    public boolean collidesWithFrame(int frameWidth, int frameHeight) {
+        return topLeft.getPointX() <= 0 || topLeft.getPointX() + width >= frameWidth ||
+                topLeft.getPointY() <= 0 || topLeft.getPointY() + length >= frameHeight;
+    }
+
+    public void reverseDirection() {
+        Random random = new Random();
+        double maxSpeed = 5.0;
+        double minSpeed = 1.0;
+
+        double newVelocityX = (random.nextDouble() * (maxSpeed - minSpeed)) + minSpeed;
+        double newVelocityY = (random.nextDouble() * (maxSpeed - minSpeed)) + minSpeed;
+
+        if (random.nextBoolean()) {
+            newVelocityX = -newVelocityX;
+        }
+        if (random.nextBoolean()) {
+            newVelocityY = -newVelocityY;
+        }
+
+        setVelocity(newVelocityX, newVelocityY);
+    }
+
+    private void setVelocity(double newVelocityX, double newVelocityY) {
+        this.velocityX = newVelocityX;
+        this.velocityY = newVelocityY;
+    }
+
 }

@@ -1,47 +1,86 @@
 package Week7_Polymorphism_2;
 
-
+import javax.swing.*;
+import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        Point newPoint = new Point(10,10);
-        Point new2ndPoint = new Point(20,10);
-        System.out.println(newPoint.distance(new2ndPoint));
-        System.out.println(newPoint.toString());
-        System.out.println(newPoint.hashCode());
-        System.out.println(new2ndPoint.hashCode());
-        System.out.println(newPoint.equals(new2ndPoint));
+        JFrame frame = new JFrame("Drawing Shapes");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1366, 768);
 
-        Shape newCircle = new Circle(newPoint, 5, "red" , false);
-        System.out.println(newCircle.getArea());
-        System.out.println(newCircle.getPerimeter());
-        System.out.println(newCircle.toString());
-        System.out.println(newCircle.hashCode());
+        Layer layer = new Layer();
+        addRandomShapes(layer);
 
-        Shape newRec = new Rectangle(new2ndPoint, 10, 30, "blue", true);
-        System.out.println(newRec.getArea());
-        System.out.println(newRec.getPerimeter());
-        System.out.println(newRec.toString());
-        System.out.println(newRec.hashCode());
+        frame.add(layer);
+        frame.setVisible(true);
 
-        Shape newRec2 = new Rectangle(new2ndPoint, 10, 30, "blue", true);
-        System.out.println(newRec2.getArea());
-        System.out.println(newRec2.getPerimeter());
-        System.out.println(newRec2.toString());
-        System.out.println(newRec2.hashCode());
+        Thread animationThread = new Thread(() -> {
+            while (true) {
+                moveShapes(layer);
+                layer.repaint();
+                try {
+                    Thread.sleep(30);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        animationThread.start();
+    }
 
-        Shape newSqr = new Square(newPoint,6.6, "green", true);
-        System.out.println(newSqr.getArea());
-        System.out.println(newSqr.getPerimeter());
-        System.out.println(newSqr.toString());
-        System.out.println(newSqr.hashCode());
+    private static void moveShapes(Layer layer) {
+        for (Shape shape : layer.getShapes()) {
+            shape.move();
+            if (shape instanceof Circle) {
+                ((Circle) shape).collidesWithFrame(1366, 768);
+                ((Circle) shape).reverseDirection();
+            } else if (shape instanceof Rectangle) {
+                ((Rectangle) shape).collidesWithFrame(1366, 768);
+                ((Rectangle) shape).reverseDirection();
+            }
+        }
+    }
 
-        Layer list = new Layer();
-        list.addShape(newSqr);
-        list.addShape(newCircle);
-        list.addShape(newRec);
-        list.removeCircles();
-        list.removeDuplicates();
-        System.out.println(list.getInfo());
+    private static void addRandomShapes(Layer layer) {
+        Random random = new Random();
+        int numOfShapes = 70;
+
+        for (int i = 0; i < numOfShapes; i++) {
+            int choice = random.nextInt(2);
+
+            if (choice == 0) {
+                double radius = random.nextDouble() * 50 + 20;
+                double centerX = random.nextDouble() * 1366;
+                double centerY = random.nextDouble() * 768;
+
+                Point center = new Point(centerX, centerY);
+                String color = getRandomColor(random);
+                boolean isFilled = random.nextBoolean();
+
+                Circle circle = new Circle(center, radius, color, isFilled);
+                layer.addShape(circle);
+            } else {
+                double width = random.nextDouble() * 80 + 30;
+                double length = random.nextDouble() * 80 + 30;
+                double topLeftX = random.nextDouble() * 1366;
+                double topLeftY = random.nextDouble() * 768;
+
+                Point topLeft = new Point(topLeftX, topLeftY);
+                String color = getRandomColor(random);
+                boolean isFilled = random.nextBoolean();
+
+                Rectangle rectangle = new Rectangle(topLeft, width, length, color, isFilled);
+                layer.addShape(rectangle);
+            }
+        }
+    }
+
+    private static String getRandomColor(Random random) {
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+
+        return String.format("#%02x%02x%02x", red, green, blue);
     }
 }

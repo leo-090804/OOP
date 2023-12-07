@@ -1,11 +1,16 @@
 package Week7_Polymorphism_2;
 
-import java.util.LinkedHashSet;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-public class Layer {
-    private List<Shape> shapes = new ArrayList<>();
+public class Layer extends JPanel {
+    private final List<Shape> shapes = new ArrayList<>();
+
+    public Layer() {
+    }
 
     /**
      * javadoc.
@@ -48,4 +53,17 @@ public class Layer {
         shapes.clear();
         shapes.addAll(crazyShapes);
     }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (Shape shape : shapes) {
+            shape.draw(g);
+        }
+    }
+
+    public List<Shape> getShapes() {
+        return shapes;
+    }
+
 }

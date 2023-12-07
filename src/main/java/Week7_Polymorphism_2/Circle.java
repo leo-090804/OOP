@@ -1,6 +1,8 @@
 package Week7_Polymorphism_2;
 
+import java.awt.*;
 import java.util.Objects;
+import java.util.Random;
 
 public class Circle extends Shape {
     protected Point center;
@@ -112,5 +114,57 @@ public class Circle extends Shape {
     @Override
     public int hashCode() {
         return Objects.hash(center, radius);
+    }
+
+    @Override
+    public void move() {
+        center.setPointX(center.getPointX() + velocityX);
+        center.setPointY(center.getPointY() + velocityY);
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        Random random = new Random();
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+
+        Color randomColor = new Color(red, green, blue);
+
+        g.setColor(randomColor);
+
+        int x = (int) (center.getPointX() - radius);
+        int y = (int) (center.getPointY() - radius);
+        int diameter = (int) (2 * radius);
+
+        g.drawOval(x, y, diameter, diameter);
+    }
+
+    public boolean collidesWithFrame(int frameWidth, int frameHeight) {
+        return center.getPointX() - radius <= 0 || center.getPointX() + radius >= frameWidth ||
+                center.getPointY() - radius <= 0 || center.getPointY() + radius >= frameHeight;
+    }
+
+    public void reverseDirection() {
+        Random random = new Random();
+        double maxSpeed = 5.0;
+        double minSpeed = 1.0;
+
+        double newVelocityX = (random.nextDouble() * (maxSpeed - minSpeed)) + minSpeed;
+        double newVelocityY = (random.nextDouble() * (maxSpeed - minSpeed)) + minSpeed;
+
+        if (random.nextBoolean()) {
+            newVelocityX = -newVelocityX;
+        }
+        if (random.nextBoolean()) {
+            newVelocityY = -newVelocityY;
+        }
+
+        setVelocity(newVelocityX, newVelocityY);
+    }
+
+    private void setVelocity(double newVelocityX, double newVelocityY) {
+        this.velocityX = newVelocityX;
+        this.velocityY = newVelocityY;
     }
 }
